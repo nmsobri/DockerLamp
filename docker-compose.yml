@@ -15,6 +15,7 @@ services:
       - ./cfg/vhosts:/etc/apache2/sites-enabled
       - ./log/apache2:/var/log/apache2
     tty: true
+
   mysql:
     build:
       context: img/mysql
@@ -42,6 +43,13 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
+
+  redis:
+    build:
+      context: img/redis
+    restart: always
+    ports:
+      - 6379:6379
 
   mailhog:
     build:

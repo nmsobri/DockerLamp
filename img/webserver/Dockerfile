@@ -1,46 +1,44 @@
 FROM php:7.3-apache
 
-RUN apt-get -y update --fix-missing
+# Update sources and install locale
+RUN apt-get update --fix-missing
 RUN apt-get upgrade -y
 
-# Install useful tools
-RUN apt-get -y install apt-utils nano wget dialog
-
 # Install important libraries
-RUN apt-get -y install --fix-missing apt-utils build-essential git curl zip
+RUN apt-get -y install --fix-missing apt-utils build-essential libpq-dev libzip-dev
+
+# Install useful tools
+RUN apt-get -y install --fix-missing vim wget dialog git zip unzip
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install xdebug
+# Install & enable mysqli
+RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+
+# Install & enable pgsql
+RUN docker-php-ext-install pgsql && docker-php-ext-enable pgsql
+
+# Install & enable mongodb
+RUN pecl install mongodb && docker-php-ext-enable mongodb
+
+# Install & enable bcmath
+RUN docker-php-ext-install bcmath && docker-php-ext-enable bcmath
+
+# Install & enable zip
+RUN docker-php-ext-install zip && docker-php-ext-enable zip
+
+# Install & enable redis
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Install & enable xdebug
 RUN pecl install xdebug-2.7.2
 RUN docker-php-ext-enable xdebug
 
-# Other PHP7 Extensions
+# Chmod system/data/, composer intall, create .env file and remove default apache file
+RUN rm -f /var/www/html/index.html
 
-RUN apt-get -y install libmcrypt-dev
-RUN docker-php-ext-install mcrypt
-
-RUN apt-get -y install libsqlite3-dev libsqlite3-0 mysql-client
-RUN docker-php-ext-install pdo_mysql
-RUN docker-php-ext-install pdo_sqlite
-RUN docker-php-ext-install mysqli
-
-RUN docker-php-ext-install curl
-RUN docker-php-ext-install tokenizer
-RUN docker-php-ext-install json
-
-RUN apt-get -y install zlib1g-dev
-RUN docker-php-ext-install zip
-
-RUN apt-get -y install libicu-dev
-RUN docker-php-ext-install -j$(nproc) intl
-
-RUN docker-php-ext-install mbstring
-
-RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
-RUN docker-php-ext-install -j$(nproc) gd
-
-# Enable apache modules
-RUN a2enmod rewrite headers
+# Configure apache
+RUN sed -i "s:DocumentRoot /var/www/html:DocumentRoot /var/www/html/public:g" /etc/apache2/sites-enabled/000-default.conf && \
+    sed -i "/#Include /a \\\tDirectoryIndex index.php" /etc/apache2/sites-enabled/000-default.conf && \
+    sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf && a2enmod rewrite
