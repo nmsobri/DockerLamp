@@ -31,6 +31,9 @@ RUN docker-php-ext-install zip && docker-php-ext-enable zip
 # Install & enable redis
 RUN pecl install redis && docker-php-ext-enable redis
 
+# Install & enable pdo
+RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
+
 # Install & enable xdebug
 RUN pecl install xdebug-2.7.2
 RUN docker-php-ext-enable xdebug

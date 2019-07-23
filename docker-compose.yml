@@ -9,6 +9,7 @@ services:
       - 80:80
     links:
       - mysql
+      - postgres
     volumes:
       - ./www:/var/www/html
       - ./cfg/php/php.ini:/usr/local/etc/php/php.ini
