@@ -10,6 +10,7 @@ services:
     links:
       - mysql
       - postgres
+      - rabbitmq
     volumes:
       - ./www:/var/www/html
       - ./cfg/php/php.ini:/usr/local/etc/php/php.ini
@@ -55,6 +56,20 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
+
+  rabbitmq:
+    build:
+      context: img/rabbitmq
+    restart: always
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+      RABBITMQ_DEFAULT_VHOST: "/"
 
   redis:
     build:
