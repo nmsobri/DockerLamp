@@ -30,6 +30,17 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
 
+  postgres:
+    build:
+      context: img/postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+
   phpmyadmin:
     build:
       context: img/phpmyadmin
@@ -58,3 +69,7 @@ services:
     ports:
       - 1025:1025
       - 8025:8025
+
+volumes:
+  pgdata:
+    driver: local
