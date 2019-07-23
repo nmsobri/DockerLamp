@@ -1,1 +1,10 @@
 .idea/
+!www/
+!www/index.php
+www/*
+!cfg/vhost/
+cfg/vhost/*
+!data/
+data/*
+!log/
+log/*

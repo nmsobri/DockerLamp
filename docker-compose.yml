@@ -12,9 +12,9 @@ services:
     volumes:
       - ./www:/var/www/html
       - ./cfg/php/php.ini:/usr/local/etc/php/php.ini
-      - ./cfg/vhosts:/etc/apache2/sites-enabled
+      - ./cfg/vhost:/etc/apache2/sites-enabled
+      - ./cfg/vhost:/etc/apache2/sites-available
       - ./log/apache2:/var/log/apache2
-    tty: true
 
   mysql:
     build:

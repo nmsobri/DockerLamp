@@ -14,7 +14,7 @@ $apacheVersion = $_SERVER['SERVER_SOFTWARE'];
 $mysqlVersion = mysqli_get_client_info();
 
 #ignored directory
-$projectsListIgnore = array ('.','..');
+$projectsListIgnore = array( '.', '..' );
 
 #ignored vhosts
 $vhostListIgnore = array( '000-default.conf', 'default-ssl.conf' );
@@ -69,38 +69,36 @@ if ( isset( $_GET['phpinfo'] ) ) {
 }
 
 #images
-if (isset($_GET['img']))
-{
-    switch ($_GET['img'])
-    {
+if ( isset( $_GET['img'] ) ) {
+    switch ( $_GET['img'] ) {
         case 'pngFolder' :
-            header("Content-type: img/png");
-            echo base64_decode($pngFolder);
+            header( "Content-type: img/png" );
+            echo base64_decode( $pngFolder );
             exit();
 
         case 'pngFolderGo' :
-            header("Content-type: img/png");
-            echo base64_decode($pngFolderGo);
+            header( "Content-type: img/png" );
+            echo base64_decode( $pngFolderGo );
             exit();
 
         case 'gifLogo' :
-            header("Content-type: img/gif");
-            echo base64_decode($gifLogo);
+            header( "Content-type: img/gif" );
+            echo base64_decode( $gifLogo );
             exit();
 
         case 'pngPlugin' :
-            header("Content-type: img/png");
-            echo base64_decode($pngPlugin);
+            header( "Content-type: img/png" );
+            echo base64_decode( $pngPlugin );
             exit();
 
         case 'pngWrench' :
-            header("Content-type: img/png");
-            echo base64_decode($pngWrench);
+            header( "Content-type: img/png" );
+            echo base64_decode( $pngWrench );
             exit();
 
         case 'favicon' :
-            header("Content-type: img/x-icon");
-            echo base64_decode($favicon);
+            header( "Content-type: img/x-icon" );
+            echo base64_decode( $favicon );
             exit();
     }
 }
@@ -117,7 +115,7 @@ $projectContents = null;
 $handle = opendir( '.' );
 while ( $file = readdir( $handle ) ) {
     if ( is_dir( $file ) && !in_array( $file, $projectsListIgnore ) ) {
-        $projectContents .= '<li><a href="'.$file.'">'.$file.'</a></li>';
+        $projectContents .= '<li><a href="' . $file . '">' . $file . '</a></li>';
     }
 }
 closedir( $handle );
@@ -129,10 +127,10 @@ if ( is_dir( $vhostsDir ) ) {
     $handle = opendir( $vhostsDir );
     while ( $file = readdir( $handle ) ) {
         if ( is_file( $vhostsDir . DIRECTORY_SEPARATOR . $file ) && strstr( $file, '.conf' ) && !in_array( $file, $vhostListIgnore ) ) {
-            $vhostsContents .= '<li><a href="http://'.str_replace('.conf','',$file).'/">http://'.str_replace('.conf','',$file).'</a></li>';
+            $vhostsContents .= '<li><a href="http://' . str_replace( '.conf', '', $file ) . '/">http://' . str_replace( '.conf', '', $file ) . '</a></li>';
         }
     }
-    closedir($handle);
+    closedir( $handle );
 }
 $vhostsContents = $vhostsContents ?: $langues[$langue]['txtNoVhosts'];
 
@@ -278,7 +276,7 @@ $pageContents = <<< EOPAGE
 		<ul class="tools">
 			<li><a href="http://{$host}?phpinfo=1">phpinfo()</a></li>
 			<li><a href="http://{$host}:8080">phpmyadmin</a></li>
-			<li><a href="http://{$host}:1080">mailhog</a></li>
+			<li><a href="http://{$host}:8025">mailhog</a></li>
 			<li><a href="http://{$host}:15672">rabbitmq</a></li>
 		</ul>
 		<h2>{$langues[$langue]['txtProjet']}</h2>
