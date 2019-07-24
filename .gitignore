@@ -8,3 +8,4 @@ cfg/vhost/*
 data/*
 !log/
 log/*
+.docker.env
