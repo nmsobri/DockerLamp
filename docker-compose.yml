@@ -5,6 +5,8 @@ services:
     build:
       context: img/webserver
     restart: always
+    env_file:
+      - .docker.env
     ports:
       - 80:80
     links:

@@ -5,7 +5,7 @@ RUN apt-get update --fix-missing
 RUN apt-get upgrade -y
 
 # Install important libraries
-RUN apt-get -y install --fix-missing apt-utils build-essential libpq-dev libzip-dev
+RUN apt-get -y install --fix-missing apt-utils build-essential libpq-dev libzip-dev libcurl4-openssl-dev pkg-config libssl-dev
 
 # Install useful tools
 RUN apt-get -y install --fix-missing vim wget dialog git zip unzip
