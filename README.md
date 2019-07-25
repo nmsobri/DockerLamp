@@ -21,9 +21,11 @@ Lamp stack with docker compose
 
 The web root is located in the project directory at `www` and you can install your files there
 
+## Requirements
+* Git <http://git-scm.com/>
+* Docker <https://www.docker.com/>
 
 ## Usage
-
 
 
 #### Startup
