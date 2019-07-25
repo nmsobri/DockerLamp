@@ -2,7 +2,6 @@
 Lamp stack with docker compose
 
 
-
 ## Technical Details
 * Apache 2 (mod_rewrite preconfigured, work out of the box)
 
@@ -21,6 +20,26 @@ Lamp stack with docker compose
 * Redis (preconfigured, work out of the box)
 
 The web root is located in the project directory at `www` and you can install your files there
+
+
+## Usage
+
+
+
+#### Startup
+```
+$ git clone git@github.com:slier81/DockerLamp.git
+$ cd DockerLamp
+$ docker-compose up -d
+```
+
+#### Shutdown
+```
+docker-compose down
+```
+
+That is pretty simple.
+
 
 ## Screenshot Of Localhost
 
