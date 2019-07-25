@@ -30,9 +30,9 @@ $langues = array(
         'versm' => 'MySQL Version :',
         'phpExt' => 'Loaded Extensions : ',
         'titrePage' => 'Tools',
-        'txtProjet' => 'Your Projects',
+        'txtProjet' => 'Projects',
         'txtNoProjet' => 'No projects yet.<br />To create a new one, just create a directory in \'www\'.',
-        'txtVhosts' => 'Your Virtual Hosts',
+        'txtVhosts' => 'Virtual Hosts',
         'txtNoVhosts' => 'No Virtual Hosts yet.<br />To create a new one, create new file in /etc/apache2/sites-available'
     )
 );
