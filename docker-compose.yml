@@ -1,94 +1,105 @@
-version: '3'
+version: "3"
 
 services:
   webserver:
-    build:
-      context: img/webserver
-    restart: always
-    env_file:
-      - .docker.env
+    build: ./img/webserver
+    image: slier81/webserver
     ports:
       - 80:80
-    links:
-      - mysql
-      - redis
-      - postgres
-      - rabbitmq
+    env_file:
+      - .docker.env
     volumes:
       - ./www:/var/www/html
       - ./cfg/php/php.ini:/usr/local/etc/php/php.ini
       - ./cfg/vhost:/etc/apache2/sites-enabled
       - ./cfg/vhost:/etc/apache2/sites-available
       - ./log/apache2:/var/log/apache2
+    networks:
+      - appnet
+    restart: always
 
   mysql:
-    build:
-      context: img/mysql
-    restart: always
+    build: ./img/mysql
+    image: slier81/mysql
     ports:
       - 3306:3306
-    volumes:
-      - ./data/mysql:/var/lib/mysql
-      - ./log/mysql:/var/log/mysql
-    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    volumes:
+      - ./vol/mysql:/var/lib/mysql
+      - ./log/mysql:/var/log/mysql
+    networks:
+      - appnet
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
+    restart: always
 
   postgres:
-    build:
-      context: img/postgres
-    restart: always
+    build: ./img/postgres
+    image: slier81/postgres
     ports:
       - 5432:5432
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./vol/postgres:/var/lib/postgresql/data
+    networks:
+      - appnet
+    restart: always
 
   phpmyadmin:
-    build:
-      context: img/phpmyadmin
-    restart: always
+    build: ./img/phpmyadmin
+    image: slier81/phpmyadmin
     ports:
       - 8080:80
-    links:
-      - mysql
-    volumes:
-      - /sessions
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
+      PMA_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      appnet
+    depends_on:
+      - mysql
+    restart: always
 
   rabbitmq:
-    build:
-      context: img/rabbitmq
-    restart: always
+    build: ./img/rabbitmq
+    image: slier81/rabbitmq
     ports:
-      - 15672:15672
       - 5672:5672
-    volumes:
-      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia
+      - 15672:15672
     environment:
       RABBITMQ_DEFAULT_USER: root
       RABBITMQ_DEFAULT_PASS: root
       RABBITMQ_DEFAULT_VHOST: "/"
+    volumes:
+      - ./vol/rabbitmq:/var/lib/rabbitmq/mnesia
+    networks:
+      - appnet
+    restart: always
 
   redis:
-    build:
-      context: img/redis
-    restart: always
+    build: ./img/redis
+    image: slier81/redis
     ports:
       - 6379:6379
+    volumes:
+      - ./vol/redis:/data
+    networks:
+      - appnet
+    restart: always
 
   mailhog:
-    build:
-      context: img/mailhog
-    restart: always
+    build: ./img/mailhog
+    image: slier81/mailhog
     ports:
       - 1025:1025
       - 8025:8025
+    networks:
+      - appnet
+    restart: always
 
-volumes:
-  pgdata:
-    driver: local
+networks:
+  appnet:
+    driver: bridge

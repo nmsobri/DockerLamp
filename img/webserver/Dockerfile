@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM php:8.0-apache
 
 # Update sources and install locale
 RUN apt-get update --fix-missing
@@ -35,8 +35,7 @@ RUN pecl install redis && docker-php-ext-enable redis
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
 
 # Install & enable xdebug
-RUN pecl install xdebug-2.7.2
-RUN docker-php-ext-enable xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug && apachectl restart
 
 # Configure mailhog for php
 RUN apt-get update && apt-get install --no-install-recommends --assume-yes --quiet ca-certificates curl git && rm -rf /var/lib/apt/lists/*

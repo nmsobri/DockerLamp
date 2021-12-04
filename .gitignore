@@ -4,8 +4,8 @@
 www/*
 !cfg/vhost/
 cfg/vhost/*
-!data/
-data/*
+!vol/
+vol/*
 !log/
 log/*
 .docker.env
