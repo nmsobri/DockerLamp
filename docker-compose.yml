@@ -1,9 +1,9 @@
-version: "3"
+version: '3.8'
 
 services:
   webserver:
     build: ./img/webserver
-    image: slier81/webserver
+    image: webserver
     ports:
       - 80:80
     env_file:
@@ -20,7 +20,7 @@ services:
 
   mysql:
     build: ./img/mysql
-    image: slier81/mysql
+    image: mysql
     ports:
       - 3306:3306
     environment:
@@ -36,7 +36,7 @@ services:
 
   postgres:
     build: ./img/postgres
-    image: slier81/postgres
+    image: postgres
     ports:
       - 5432:5432
     environment:
@@ -49,7 +49,7 @@ services:
 
   phpmyadmin:
     build: ./img/phpmyadmin
-    image: slier81/phpmyadmin
+    image: phpmyadmin
     ports:
       - 8080:80
     environment:
@@ -57,15 +57,18 @@ services:
       PMA_PORT: 3306
       PMA_PASSWORD: root
       MYSQL_ROOT_PASSWORD: root
+    volumes: 
+      - /sessions
+
     networks:
-      appnet
+      - appnet
     depends_on:
       - mysql
     restart: always
 
   rabbitmq:
     build: ./img/rabbitmq
-    image: slier81/rabbitmq
+    image: rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
@@ -81,7 +84,7 @@ services:
 
   redis:
     build: ./img/redis
-    image: slier81/redis
+    image: redis
     ports:
       - 6379:6379
     volumes:
@@ -92,7 +95,7 @@ services:
 
   mailhog:
     build: ./img/mailhog
-    image: slier81/mailhog
+    image: mailhog
     ports:
       - 1025:1025
       - 8025:8025

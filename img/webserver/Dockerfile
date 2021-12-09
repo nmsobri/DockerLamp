@@ -1,54 +1,42 @@
-FROM php:8.0-apache
-
-# Update sources and install locale
-RUN apt-get update --fix-missing
-RUN apt-get upgrade -y
-
-# Install important libraries
-RUN apt-get -y install --fix-missing apt-utils build-essential libpq-dev libzip-dev libcurl4-openssl-dev pkg-config libssl-dev
-
-# Install useful tools
-RUN apt-get -y install --fix-missing vim wget dialog git zip unzip
-
-# Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install & enable mysqli
-RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
-
-# Install & enable pgsql
-RUN docker-php-ext-install pgsql && docker-php-ext-enable pgsql
-
-# Install & enable mongodb
-RUN pecl install mongodb && docker-php-ext-enable mongodb
-
-# Install & enable bcmath
-RUN docker-php-ext-install bcmath && docker-php-ext-enable bcmath
-
-# Install & enable zip
-RUN docker-php-ext-install zip && docker-php-ext-enable zip
-
-# Install & enable redis
-RUN pecl install redis && docker-php-ext-enable redis
-
-# Install & enable pdo
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
-
-# Install & enable xdebug
-RUN pecl install xdebug && docker-php-ext-enable xdebug && apachectl restart
-
+FROM golang:buster AS builder
 # Configure mailhog for php
-RUN apt-get update && apt-get install --no-install-recommends --assume-yes --quiet ca-certificates curl git && rm -rf /var/lib/apt/lists/*
-RUN curl -Lsf 'https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz' | tar -C '/usr/local' -xvzf -
-ENV PATH /usr/local/go/bin:$PATH
-RUN go get github.com/mailhog/mhsendmail
-RUN cp /root/go/bin/mhsendmail /usr/bin/mhsendmail
-RUN echo 'sendmail_path = /usr/bin/mhsendmail --smtp-addr mailhog:1025' > /usr/local/etc/php/php.ini
+RUN apt-get --no-install-recommends -y -qq install ca-certificates && go install github.com/mailhog/mhsendmail@latest && rm -rf /var/lib/apt/lists/*
 
-# Chmod system/data/, composer intall, create .env file and remove default apache file
-RUN rm -f /var/www/html/index.html
+FROM php:8.0-apache-buster
+COPY --from=builder /go/bin/mhsendmail /usr/bin/mhsendmail
 
-# Configure apache
-RUN sed -i "s:DocumentRoot /var/www/html:DocumentRoot /var/www/html/public:g" /etc/apache2/sites-enabled/000-default.conf && \
+# Surpresses debconf complaints of trying to install apt packages interactively
+# https://github.com/moby/moby/issues/4032#issuecomment-192327844
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Update sources and install important tools / libraries
+RUN apt-get --fix-missing -y -qq update && apt-get -y -qq upgrade && \
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    apt-get --no-install-recommends -y -qq install apt-utils build-essential libpq-dev libzip-dev libsqlite3-dev \
+    libcurl4-openssl-dev pkg-config libssl-dev libicu-dev libonig-dev && rm -rf /var/lib/apt/lists/*
+
+# Install php Extension
+# Configure apache and remove default apache file and do cleanup
+RUN docker-php-ext-install pdo && \
+    docker-php-ext-install pdo_mysql && \
+    docker-php-ext-install pdo_pgsql && \
+    docker-php-ext-install pdo_sqlite && \
+    docker-php-ext-install pgsql && \
+    docker-php-ext-install mysqli && \
+    docker-php-ext-install curl && \
+    docker-php-ext-install bcmath && \
+    docker-php-ext-install tokenizer && \
+    docker-php-ext-install zip && \
+    docker-php-ext-install -j$(nproc) intl && \
+    docker-php-ext-install mbstring && \
+    docker-php-ext-install gettext && \
+    docker-php-ext-install calendar && \
+    docker-php-ext-install exif && \
+    pecl install redis && docker-php-ext-enable redis && \
+    pecl install mongodb && docker-php-ext-enable mongodb && \
+    pecl install xdebug && docker-php-ext-enable xdebug && \
+    sed -i "s:DocumentRoot /var/www/html:DocumentRoot /var/www/html/public:g" /etc/apache2/sites-enabled/000-default.conf && \
     sed -i "/#Include /a \\\tDirectoryIndex index.php" /etc/apache2/sites-enabled/000-default.conf && \
-    sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf && a2enmod rewrite
+    sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf && a2enmod rewrite && \
+    echo 'sendmail_path = /usr/bin/mhsendmail --smtp-addr mailhog:1025' > /usr/local/etc/php/php.ini && \
+    rm -f /var/www/html/index.html && rm -rf /usr/src/* && apachectl restart
