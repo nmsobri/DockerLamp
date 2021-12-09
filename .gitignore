@@ -1,9 +1,14 @@
 .idea/
 !www/
 !www/index.php
+!www/console/
 www/*
 !cfg/vhost/
+!cfg/vhost/local.io.conf
 cfg/vhost/*
+!cfg/php/
+!cfg/php.ini
+cfg/php/*
 !vol/
 vol/*
 !log/
