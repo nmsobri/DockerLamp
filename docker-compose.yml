@@ -5,15 +5,17 @@ services:
     build: ./img/webserver
     image: webserver
     ports:
-      - 80:80
-    env_file:
-      - .docker.env
+      - '${WEBSERVER_HTTP_PORT:?err}:80'
+      - '${WEBSERVER_HTTPS_PORT:?err}:443'
+    environment:
+      PHP_XDEBUG_IDE_KEY: ${PHP_XDEBUG_IDE_KEY:?err}
+      PHP_XDEBUG_REMOTE_HOST: ${PHP_XDEBUG_REMOTE_HOST:?err}
     volumes:
-      - ./www:/var/www/html
-      - ./cfg/php/php.ini:/usr/local/etc/php/php.ini
-      - ./cfg/vhost:/etc/apache2/sites-enabled
-      - ./cfg/vhost:/etc/apache2/sites-available
-      - ./log/apache2:/var/log/apache2
+      - '${WEBSERVER_DOCUMENT_ROOT:?err}:/var/www/html'
+      - '${WEBSERVER_PHP_INI:?err}:/usr/local/etc/php/php.ini'
+      - '${WEBSERVER_VHOST_DIR:?err}:/etc/apache2/sites-enabled'
+      - '${WEBSERVER_VHOST_DIR:?err}:/etc/apache2/sites-available'
+      - '${WEBSERVER_LOG_DIR:?err}:/var/log/apache2'
     networks:
       - appnet
     restart: always
@@ -22,13 +24,13 @@ services:
     build: ./img/mysql
     image: mysql
     ports:
-      - 3306:3306
+      - '${MYSQL_PORT:?err}:3306'
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?err}
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
     volumes:
-      - ./vol/mysql:/var/lib/mysql
-      - ./log/mysql:/var/log/mysql
+      - '${MYSQL_VOL_DIR:?err}:/var/lib/mysql'
+      - '${MYSQL_LOG_DIR:?err}:/var/log/mysql'
     networks:
       - appnet
     command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
@@ -38,28 +40,33 @@ services:
     build: ./img/postgres
     image: postgres
     ports:
-      - 5432:5432
+      - '${POSTGRES_PORT:?err}:5432'
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?err}
     volumes:
-      - ./vol/postgres:/var/lib/postgresql/data
+      - '${POSTGRES_VOL_DIR:?err}:/var/lib/postgresql/data'
+      - '${POSTGRES_LOG_DIR:?err}:/logs:z'
     networks:
       - appnet
+    # Make Postgres log to a file.
+    command: /bin/bash -c "mkdir -p /logs && chmod -R 777 /logs && postgres -c logging_collector=on -c log_destination=stderr -c log_directory=/logs"
     restart: always
 
   phpmyadmin:
     build: ./img/phpmyadmin
     image: phpmyadmin
     ports:
-      - 8080:80
+      - '${PMA_PORT:?err}:80'
     environment:
       PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_PASSWORD: root
-      MYSQL_ROOT_PASSWORD: root
+      PMA_PORT: ${MYSQL_PORT:?err}
+      PMA_USER: ${PMA_USER:?err}
+      PMA_PASSWORD: ${PMA_PASSWORD:?err}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD?:err}
+      UPLOAD_LIMIT: ${PMA_UPLOAD_LIMIT:?err}
+      MEMORY_LIMIT: ${PMA_MEMORY_LIMIT:?err}
     volumes: 
       - /sessions
-
     networks:
       - appnet
     depends_on:
@@ -70,14 +77,16 @@ services:
     build: ./img/rabbitmq
     image: rabbitmq
     ports:
-      - 5672:5672
-      - 15672:15672
+      - '${RABBITMQ_PORT_1:?err}:5672'
+      - '${RABBITMQ_PORT_2:?err}:15672'
     environment:
-      RABBITMQ_DEFAULT_USER: root
-      RABBITMQ_DEFAULT_PASS: root
-      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:?err}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:?err}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:?err}
     volumes:
-      - ./vol/rabbitmq:/var/lib/rabbitmq/mnesia
+      - '${RABBITMQ_VOL_DIR:?err}:/var/lib/rabbitmq'
+      - '${RABBITMQ_LOG_DIR:?err}:/var/log/rabbitmq'
+      - '${RABBITMQ_CFG_DIR:?err}:/etc/rabbitmq'
     networks:
       - appnet
     restart: always
@@ -86,9 +95,9 @@ services:
     build: ./img/redis
     image: redis
     ports:
-      - 6379:6379
+      - '${REDIS_PORT:?err}:6379'
     volumes:
-      - ./vol/redis:/data
+      - '${REDIS_VOL_DIR:?err}:/data'
     networks:
       - appnet
     restart: always
@@ -97,8 +106,8 @@ services:
     build: ./img/mailhog
     image: mailhog
     ports:
-      - 1025:1025
-      - 8025:8025
+      - '${MAILHOG_PORT1:?err}:1025'
+      - '${MAILHOG_PORT2:?err}:8025'
     networks:
       - appnet
     restart: always
