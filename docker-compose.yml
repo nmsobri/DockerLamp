@@ -60,9 +60,6 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: ${MYSQL_PORT:?err}
-      PMA_USER: ${PMA_USER:?err}
-      PMA_PASSWORD: ${PMA_PASSWORD:?err}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD?:err}
       UPLOAD_LIMIT: ${PMA_UPLOAD_LIMIT:?err}
       MEMORY_LIMIT: ${PMA_MEMORY_LIMIT:?err}
     volumes: 
