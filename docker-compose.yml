@@ -83,7 +83,6 @@ services:
     volumes:
       - '${RABBITMQ_VOL_DIR:?err}:/var/lib/rabbitmq'
       - '${RABBITMQ_LOG_DIR:?err}:/var/log/rabbitmq'
-      - '${RABBITMQ_CFG_DIR:?err}:/etc/rabbitmq'
     networks:
       - appnet
     restart: always

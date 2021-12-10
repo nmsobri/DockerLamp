@@ -7,7 +7,7 @@ Lamp stack with docker compose
 
 * MySQL 8.0
 
-* PHP 7.3 (xdebug preconfigured, work out of the box)
+* PHP 8.0 (xdebug preconfigured, work out of the box)
 
 * PhpMyadmin
 
@@ -32,6 +32,7 @@ The web root is located in the project directory at `www` and you can install yo
 ```
 $ git clone git@github.com:slier81/DockerLamp.git
 $ cd DockerLamp
+$ mv .env.dist .env
 $ docker-compose up -d
 ```
 
