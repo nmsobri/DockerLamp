@@ -8,8 +8,8 @@ services:
       - '${WEBSERVER_HTTP_PORT:?err}:80'
       - '${WEBSERVER_HTTPS_PORT:?err}:443'
     environment:
-      PHP_XDEBUG_IDE_KEY: ${PHP_XDEBUG_IDE_KEY:?err}
-      PHP_XDEBUG_REMOTE_HOST: ${PHP_XDEBUG_REMOTE_HOST:?err}
+      XDEBUG_IDE_KEY: ${XDEBUG_IDE_KEY:?err}
+      XDEBUG_REMOTE_HOST: ${XDEBUG_REMOTE_HOST:?err}
     volumes:
       - '${WEBSERVER_DOCUMENT_ROOT:?err}:/var/www/html'
       - '${WEBSERVER_PHP_INI:?err}:/usr/local/etc/php/php.ini'
