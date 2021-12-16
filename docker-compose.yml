@@ -33,9 +33,9 @@ services:
     volumes:
       - '${MYSQL_VOL_DIR:?}:/var/lib/mysql'
       - '${MYSQL_LOG_DIR:?}:/var/log/mysql'
+      - '${MYSQL_CNF:?}:/etc/mysql/mysql.cnf'
     networks:
       - appnet
-    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
     restart: always
 
   postgres:

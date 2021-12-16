@@ -8,6 +8,9 @@ cfg/*
 !cfg/php/php.ini
 !cfg/php/.gitkeep
 
+!cfg/mysql/
+!cfg/mysql/my.cnf
+
 !cfg/vhost/
 !cfg/vhost/local.io.conf
 !cfg/vhost/.gitkeep
