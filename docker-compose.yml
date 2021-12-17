@@ -33,7 +33,7 @@ services:
     volumes:
       - '${MYSQL_VOL_DIR:?}:/var/lib/mysql'
       - '${MYSQL_LOG_DIR:?}:/var/log/mysql'
-      - '${MYSQL_CNF:?}:/etc/mysql/mysql.cnf'
+      - '${MYSQL_CNF_DIR:?}:/etc/mysql/conf.d'
     networks:
       - appnet
     restart: always
