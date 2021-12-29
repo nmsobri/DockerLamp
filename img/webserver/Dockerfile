@@ -14,26 +14,14 @@ RUN apt-get --fix-missing -y -qq update && apt-get -y -qq upgrade && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     apt-get --no-install-recommends -y -qq install apt-utils build-essential libpq-dev libzip-dev \
     libsqlite3-dev libcurl4-openssl-dev pkg-config libssl-dev libicu-dev libjpeg62-turbo-dev libpng-dev \
-    libonig-dev && rm -rf /var/lib/apt/lists/*
+    libwebp-dev libonig-dev libfreetype6-dev && rm -rf /var/lib/apt/lists/*
 
 # Install php Extension
 # Configure apache and remove default apache file and do cleanup
-RUN docker-php-ext-install pdo && \
-    docker-php-ext-install pdo_mysql && \
-    docker-php-ext-install pdo_pgsql && \
-    docker-php-ext-install pdo_sqlite && \
-    docker-php-ext-install pgsql && \
-    docker-php-ext-install mysqli && \
-    docker-php-ext-install curl && \
-    docker-php-ext-install bcmath && \
-    docker-php-ext-install tokenizer && \
-    docker-php-ext-install zip && \
-    docker-php-ext-install -j$(nproc) intl && \
-    docker-php-ext-install mbstring && \
-    docker-php-ext-install gettext && \
-    docker-php-ext-install calendar && \
-    docker-php-ext-install exif && \
-    docker-php-ext-install gd && \
+RUN set -eux; \
+    docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp; \
+    docker-php-ext-install -j$(nproc) intl pdo pdo_mysql pdo_pgsql pdo_sqlite \
+    pgsql mysqli curl bcmath tokenizer zip mbstring gettext calendar exif gd && \
     pecl install redis && docker-php-ext-enable redis && \
     pecl install mongodb && docker-php-ext-enable mongodb && \
     pecl install xdebug && docker-php-ext-enable xdebug && \
