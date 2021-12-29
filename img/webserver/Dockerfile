@@ -12,8 +12,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Update sources and install important tools / libraries
 RUN apt-get --fix-missing -y -qq update && apt-get -y -qq upgrade && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    apt-get --no-install-recommends -y -qq install apt-utils build-essential libpq-dev libzip-dev libsqlite3-dev \
-    libcurl4-openssl-dev pkg-config libssl-dev libicu-dev libpng-dev libonig-dev && rm -rf /var/lib/apt/lists/*
+    apt-get --no-install-recommends -y -qq install apt-utils build-essential libpq-dev libzip-dev \
+    libsqlite3-dev libcurl4-openssl-dev pkg-config libssl-dev libicu-dev libjpeg62-turbo-dev libpng-dev \
+    libonig-dev && rm -rf /var/lib/apt/lists/*
 
 # Install php Extension
 # Configure apache and remove default apache file and do cleanup
