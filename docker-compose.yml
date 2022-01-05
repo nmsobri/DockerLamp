@@ -36,6 +36,8 @@ services:
       - '${MYSQL_CNF_DIR:?}:/etc/mysql/conf.d'
     networks:
       - appnet
+    entrypoint: ''
+    command: bash -c "chown -R mysql:mysql /var/log/mysql && exec /entrypoint.sh mysqld"
     restart: always
 
   postgres:
